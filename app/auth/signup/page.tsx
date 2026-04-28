@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useSignup } from "@/hooks/auth/useSignup"
 
 export default function SignupPage() {
-    const { submitted, handleSubmit, errors, isSubmitting, onSubmit, register } = useSignup()
+    const { submitted, handleSubmit, errors, isSubmitting, onSubmit, register, signupError, createdUserName } = useSignup()
 
 
     return (
@@ -58,8 +58,14 @@ export default function SignupPage() {
                     </div>
                 </form>
 
+                {signupError && (
+                    <p className="mt-4 text-sm text-destructive">{signupError}</p>
+                )}
+
                 {submitted && (
-                    <p className="mt-4 text-sm text-green-600">Account created (demo only) — check console</p>
+                    <p className="mt-4 text-sm text-green-600">
+                        Account created successfully{createdUserName ? ` for ${createdUserName}` : ""}.
+                    </p>
                 )}
 
                 <p className="mt-6 text-sm text-muted-foreground">

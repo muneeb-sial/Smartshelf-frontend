@@ -1,10 +1,13 @@
 import { LoginSchema, LoginSchemaType } from "@/schema/auth/login.schema"
+import { fetchCurrentUser, loginUser, persistAuthToken } from "@/lib/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 export const useLogin = () => {
     const [submitted, setSubmitted] = useState(false)
+    const [authError, setAuthError] = useState<string | null>(null)
+    const [userName, setUserName] = useState<string | null>(null)
 
     const {
         register,
@@ -13,11 +16,20 @@ export const useLogin = () => {
     } = useForm<LoginSchemaType>({ resolver: zodResolver(LoginSchema) })
 
     async function onSubmit(data: LoginSchemaType) {
-        // In a real app you'd call your auth API here.
-        console.log("Login submit:", data)
-        setSubmitted(true)
-        // simulate small delay
-        await new Promise((r) => setTimeout(r, 400))
+        setAuthError(null)
+        setSubmitted(false)
+
+        try {
+            const token = await loginUser(data.email, data.password)
+            persistAuthToken(token.access_token)
+
+            const currentUser = await fetchCurrentUser(token.access_token)
+            setUserName(currentUser.name)
+            setSubmitted(true)
+        } catch (error) {
+            setUserName(null)
+            setAuthError(error instanceof Error ? error.message : "Login failed")
+        }
     }
 
     return {
@@ -26,6 +38,8 @@ export const useLogin = () => {
         submitted,
         onSubmit,
         errors,
-        isSubmitting
+        isSubmitting,
+        authError,
+        userName,
     }
 }

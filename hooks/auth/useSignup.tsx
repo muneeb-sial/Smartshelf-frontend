@@ -1,10 +1,13 @@
 import { SignupSchema, SignupSchemaType } from "@/schema/auth/signup.schema"
+import { signupUser } from "@/lib/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 export const useSignup = () => {
 	const [submitted, setSubmitted] = useState(false)
+	const [signupError, setSignupError] = useState<string | null>(null)
+	const [createdUserName, setCreatedUserName] = useState<string | null>(null)
 
 	const {
 		register,
@@ -13,11 +16,17 @@ export const useSignup = () => {
 	} = useForm<SignupSchemaType>({ resolver: zodResolver(SignupSchema) })
 
 	async function onSubmit(data: SignupSchemaType) {
-		// In a real app you'd call your auth API here.
-		console.log("Signup submit:", data)
-		setSubmitted(true)
-		// simulate small delay
-		await new Promise((r) => setTimeout(r, 400))
+		setSignupError(null)
+		setSubmitted(false)
+
+		try {
+			const user = await signupUser(data.name, data.email, data.password)
+			setCreatedUserName(user.name)
+			setSubmitted(true)
+		} catch (error) {
+			setCreatedUserName(null)
+			setSignupError(error instanceof Error ? error.message : "Signup failed")
+		}
 	}
 
 	return {
@@ -27,5 +36,7 @@ export const useSignup = () => {
 		onSubmit,
 		errors,
 		isSubmitting,
+		signupError,
+		createdUserName,
 	}
 }

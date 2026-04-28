@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useLogin } from "@/hooks/auth/useLogin"
 
 export default function LoginPage() {
-    const { submitted, handleSubmit, errors, isSubmitting, onSubmit, register } = useLogin()
+    const { submitted, handleSubmit, errors, isSubmitting, onSubmit, register, authError, userName } = useLogin()
 
 
     return (
@@ -48,8 +48,14 @@ export default function LoginPage() {
                     </div>
                 </form>
 
+                {authError && (
+                    <p className="mt-4 text-sm text-destructive">{authError}</p>
+                )}
+
                 {submitted && (
-                    <p className="mt-4 text-sm text-green-600">Signed in (demo only) — check console</p>
+                    <p className="mt-4 text-sm text-green-600">
+                        Signed in successfully{userName ? ` as ${userName}` : ""}.
+                    </p>
                 )}
 
                 <p className="mt-6 text-sm text-muted-foreground">
