@@ -3,15 +3,17 @@
 import React, { useMemo, useState } from "react";
 import BookCard from "@/components/home/BookCard";
 import { Search } from "lucide-react";
+import { BookOut } from "@/types/api.types";
 
-type Book = {
+export type Book = {
   id: string;
   title: string;
-  description: string;
-  image?: string;
+  file_name: string;
+  author: string;
+  cover_image_path: string;
 };
 
-export default function SearchBar({ initialBooks }: { initialBooks: Book[] }) {
+export default function SearchBar({ initialBooks }: { initialBooks: BookOut[] }) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -20,7 +22,7 @@ export default function SearchBar({ initialBooks }: { initialBooks: Book[] }) {
     return initialBooks.filter(
       (b) =>
         b.title.toLowerCase().includes(q) ||
-        b.description.toLowerCase().includes(q)
+        b.author!.toLowerCase().includes(q)
     );
   }, [query, initialBooks]);
 
@@ -30,7 +32,7 @@ export default function SearchBar({ initialBooks }: { initialBooks: Book[] }) {
         <Search />
         <input
           aria-label="Search books"
-          placeholder="Search books by title or description..."
+          placeholder="Search books by title or author..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full focus:bg-transparent focus:outline-0"

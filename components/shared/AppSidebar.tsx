@@ -31,11 +31,6 @@ const items = [
     url: "/lib/upload",
     icon: Search,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
 ]
 
 export function AppSidebar() {

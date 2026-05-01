@@ -5,20 +5,35 @@ export const UploadSchema = z.object({
     .string()
     .min(1, "Title is required")
     .max(100, "Title must be less than 100 characters"),
-  description: z
+  author: z
     .string()
-     .min(1, "Description is required")
-    .max(500, "Description must be less than 500 characters"),
-  image: z
-    .custom<File>()
-    .refine((file) => !file || (file instanceof File && file.type.startsWith('image/')), {
+    .min(1, "Author is required")
+    .max(100, "Author must be less than 100 characters"),
+  cover_image: z
+    .custom<FileList>()
+    .refine((file) => {
+      const singleFile = file?.[0];
+      console.log({ cover_img: singleFile })
+      return !singleFile || (singleFile instanceof File && singleFile.type.startsWith('image/'))
+    }, {
       message: "Cover image must be a valid image file"
     })
     .optional(),
-  pdf: z
-    .custom<File>()
-    .refine((file) => !file || (file instanceof File && file.type === 'application/pdf'), {
-      message: "Supplementary file must be a PDF"
+  file: z
+    .custom<FileList>()
+    .refine((file) => {
+      const singleFile = file?.[0];
+      console.log({ file: singleFile })
+      return !singleFile || (singleFile instanceof File && (
+        singleFile.type === "application/pdf" ||
+        singleFile.type === "application/msword" ||
+        singleFile.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        singleFile.type === "text/markdown" ||
+        singleFile.name?.endsWith(".md")
+      ))
+    }, {
+      message: "File must be a PDF or Markdown"
     })
     .optional(),
 });

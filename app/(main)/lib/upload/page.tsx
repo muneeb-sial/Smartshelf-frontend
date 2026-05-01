@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useUpload } from "@/hooks/useUpload";
 
-export default function UploadVideoPage() {
+export default function UploadBookPage() {
   const {
     register,
     handleSubmit,
@@ -18,12 +18,12 @@ export default function UploadVideoPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 w-full">
       <div className="w-full max-w-2xl bg-primary-foreground rounded-lg p-8 shadow">
-        <h1 className="text-2xl font-semibold mb-4">Upload Video</h1>
+        <h1 className="text-2xl font-semibold mb-4">Upload Book</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1" htmlFor="title">
-              Video Title
+              Book Title
             </label>
             <input
               id="title"
@@ -41,19 +41,20 @@ export default function UploadVideoPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1" htmlFor="description">
-              Description
+            <label className="block text-sm font-medium mb-1" htmlFor="author">
+              Author
             </label>
-            <textarea
-              id="description"
-              {...register("description")}
-              className="w-full rounded border px-3 py-2 text-sm h-24"
-              placeholder="Short description about the video"
-              aria-describedby={errors.description ? "description-error" : undefined}
+            <input
+              id="author"
+              type="text"
+              {...register("author")}
+              className="w-full rounded border px-3 py-2 text-sm"
+              placeholder="Author name"
+              aria-describedby={errors.author ? "author-error" : undefined}
             />
-            {errors.description && (
-              <p id="description-error" className="text-xs text-destructive mt-1">
-                {errors.description?.message}
+            {errors.author && (
+              <p id="author-error" className="text-xs text-destructive mt-1">
+                {errors.author?.message}
               </p>
             )}
           </div>
@@ -67,16 +68,17 @@ export default function UploadVideoPage() {
                 id="image"
                 type="file"
                 accept="image/*"
-                {...register("image")}
+                {...register("cover_image")}
                 className="w-full text-sm"
-                aria-describedby={errors.image ? "image-error" : undefined}
+                aria-describedby={errors.cover_image ? "cover_image-error" : undefined}
               />
-              {errors.image && (
-                <p id="image-error" className="text-xs text-destructive mt-1">
-                  {errors.image?.message}
+              {errors.cover_image && (
+                <p id="cover_image-error" className="text-xs text-destructive mt-1">
+                  {errors.cover_image?.message}
                 </p>
               )}
               {imagePreview && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={imagePreview || ''}
                   alt="Cover image preview"
@@ -93,13 +95,13 @@ export default function UploadVideoPage() {
                 id="pdf"
                 type="file"
                 accept="application/pdf"
-                {...register("pdf")}
+                {...register("file")}
                 className="w-full text-sm"
-                aria-describedby={errors.pdf ? "pdf-error" : undefined}
+                aria-describedby={errors.file ? "file-error" : undefined}
               />
-              {errors.pdf && (
-                <p id="pdf-error" className="text-xs text-destructive mt-1">
-                  {errors.pdf?.message}
+              {errors.file && (
+                <p id="file-error" className="text-xs text-destructive mt-1">
+                  {errors.file?.message}
                 </p>
               )}
             </div>
@@ -107,7 +109,7 @@ export default function UploadVideoPage() {
 
           <div className="flex items-center justify-between gap-2">
             <Button type="submit" disabled={isSubmitting} className="w-full">
-              {isSubmitting ? "Uploading..." : "Upload Video"}
+              {isSubmitting ? "Uploading..." : "Upload Book"}
             </Button>
           </div>
         </form>

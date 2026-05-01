@@ -1,0 +1,57 @@
+import {
+  ChatMessage,
+  type ChatMessageProps,
+  type Message,
+} from "@/components/ui/chat-message"
+import AITextLoading from "../kokonutui/ai-text-loading"
+
+type AdditionalMessageOptions = Omit<ChatMessageProps, keyof Message>
+
+interface MessageListProps {
+  messages: Message[]
+  showTimeStamps?: boolean
+  isTyping?: boolean
+  messageOptions?:
+  | AdditionalMessageOptions
+  | ((message: Message) => AdditionalMessageOptions)
+}
+
+export function MessageList({
+  messages,
+  showTimeStamps = true,
+  isTyping = false,
+  messageOptions,
+}: MessageListProps) {
+  return (
+    <div className="space-y-4 overflow-visible">
+      {messages.map((message, index) => {
+        const additionalOptions =
+          typeof messageOptions === "function"
+            ? messageOptions(message)
+            : messageOptions
+
+        return (
+          <ChatMessage
+            key={index}
+            showTimeStamp={showTimeStamps}
+            {...message}
+            {...additionalOptions}
+          />
+        )
+      })}
+      {isTyping && <div className="">
+        <AITextLoading
+          className="text-base"
+          texts={[
+            "Thinking...",
+            "Generating...",
+            "Processing...",
+            "Analyzing...",
+          ]}
+          interval={2500}
+        />
+      </div>
+      }
+    </div>
+  )
+}

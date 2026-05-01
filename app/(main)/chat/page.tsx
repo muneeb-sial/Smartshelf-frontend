@@ -1,59 +1,55 @@
 "use client"
+import AI_Input_Search from "@/components/kokonutui/ai-input-search"
+import { CopyButton } from "@/components/ui/copy-button"
+import { MessageList } from "@/components/ui/message-list"
+import { useChat } from "@/hooks/useChat"
+import { Share, ThumbsDown, ThumbsUp } from "lucide-react"
 
-import { ChatInput } from "@/components/chat/ChatInput"
-import { ChatMessage } from "@/components/chat/ChatMessage"
-import { useChatStore } from "@/stores/chat"
-import { useEffect } from "react"
+const ChatPage = () => {
+  const { messages, sendMessage, isGenerating ,setIsGenerating,setMessages } = useChat()
+  const addUserMessage = (message: string) => {
+    setMessages((prev) => [...prev, { id: messages.length.toString() + 1, role: "user", content: message }])
+  }
 
-const INITIAL_MESSAGE = "Hello! How can I help you today?"
+  return (
+    <div className="max-w-5xl mx-auto h-screen flex justify-between flex-col p-2">
+      <div className="h-[calc(100%-80px)] overflow-auto py-8 no-scrollbar">
 
-export default function ChatPage() {
-    const { messages, addMessage, isLoading, setIsLoading } = useChatStore()
+        <MessageList
+          messageOptions={{
+            animation: "scale",
+            actions: <Actions />,
+            showTimeStamp: true,
+          }}
+          isTyping={isGenerating}
+          messages={messages}
+          showTimeStamps
+        />
+      </div>
+      <div className="">
 
-    // Add initial message on mount
-    useEffect(() => {
-        if (messages.length === 0) {
-            addMessage(INITIAL_MESSAGE, "assistant")
-        }
-    }, [messages.length, addMessage])
+        <AI_Input_Search
+          isLoading={isGenerating}
+          onSubmit={(value) => {
+            if (!value.trim()) return;
+            sendMessage(value)
+            addUserMessage(value)
+            setIsGenerating(true)
+          }}
 
-    async function handleSubmit(message: string) {
-        // Add user message immediately
-        addMessage(message, "user")
-        
-        // Show typing indicator
-        setIsLoading(true)
-
-        try {
-            // Simulate API delay
-            await new Promise(r => setTimeout(r, 1000))
-
-            // Add dummy response
-            addMessage(`You said: "${message}". This is a dummy response from the AI.`, "assistant")
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    return (
-        <div className="flex flex-col h-[calc(100vh-4rem)] w-full mx-auto max-w-3xl">
-            <div className="flex-1 overflow-y-auto ">
-                {messages.map((message) => (
-                    <ChatMessage
-                        key={message.id}
-                        content={message.content}
-                        role={message.role}
-                    />
-                ))}
-                {isLoading && (
-                    <ChatMessage
-                        content=""
-                        role="assistant"
-                        isLoading
-                    />
-                )}
-            </div>
-            <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
-        </div>
-    )
+        />
+      </div>
+    </div>
+  )
 }
+
+const Actions = () => {
+  return <div className="flex gap-3 p-1 relative items-center">
+    <ThumbsUp className="size-3.5 text-gray-500 hover:text-gray-700 cursor-pointer" />
+    <ThumbsDown className="size-3.5 text-gray-500 hover:text-gray-700 cursor-pointer" />
+    <CopyButton content="" />
+    <Share className="size-3.5 text-gray-500 hover:text-gray-700 cursor-pointer" />
+  </div>
+}
+
+export default ChatPage

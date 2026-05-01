@@ -1,7 +1,8 @@
 import { UploadSchema, UploadSchemaType } from "@/schema/upload.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { SERVER_URL } from "../env"
 
 export const useUpload = () => {
     const [submitted, setSubmitted] = useState(false)
@@ -17,12 +18,12 @@ export const useUpload = () => {
         resolver: zodResolver(UploadSchema),
         defaultValues: {
             title: "",
-            description: "",
+            author: "",
         }
     })
 
     // Watch for image file changes to update preview
-    const imageFile = watch("image")
+    const imageFile = watch("cover_image")
     if (imageFile instanceof File && !imagePreview) {
         const url = URL.createObjectURL(imageFile)
         setImagePreview(url)
@@ -39,9 +40,9 @@ export const useUpload = () => {
         try {
             const fd = new FormData()
             fd.append("title", data.title)
-            if (data.description) fd.append("description", data.description)
-            if (data.image) fd.append("image", data.image)
-            if (data.pdf) fd.append("pdf", data.pdf)
+            if (data.author) fd.append("author", data.author)
+            if (data.cover_image) fd.append("cover_image", data.cover_image[0])
+            if (data.file) fd.append("file", data.file[0])
 
             // For demo: log the FormData keys and types
             console.group("Upload form data (demo)")
@@ -56,7 +57,15 @@ export const useUpload = () => {
             console.groupEnd()
 
             // Simulate network delay
-            await new Promise((r) => setTimeout(r, 800))
+            // await new Promise((r) => setTimeout(r, 800))
+            await fetch(`${SERVER_URL}/books`, {
+                method: "POST",
+                body: fd,
+                // headers: {
+                    // "Accept": "application/json",
+                    // "Content-Type": "multipart/form-data"
+                // }
+            })
 
             setSubmitted(true)
             clearPreview()
@@ -66,6 +75,12 @@ export const useUpload = () => {
             throw new Error("Upload failed (demo). Check console.")
         }
     }
+
+    useEffect(()=>{
+        if (errors) {
+            console.log(errors)
+        }
+    },[errors])
 
     return {
         register,
