@@ -12,7 +12,7 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto h-screen flex justify-between flex-col p-2">
+    <div className="max-w-5xl mx-auto h-[calc(100vh-60px)] flex justify-between flex-col p-2 no-scrollbar">
       <div className="h-[calc(100%-80px)] overflow-auto py-8 no-scrollbar">
 
         <MessageList

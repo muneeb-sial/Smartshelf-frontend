@@ -3,33 +3,29 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BookDetailsDialog } from "./dialogs/BookDetailsDialog";
 import { Download } from "lucide-react";
 import { BookOut } from "@/types/api.types";
 import { SERVER_URL } from "@/env";
 
-type Book = {
-  id: string;
-  title: string;
-  file_name: string;
-  author: string;
-  cover_image_path: string;
-};
-
 export default function BookCard({ book }: { book: BookOut }) {
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    const response = await fetch(`${SERVER_URL}/${book.file_name}`);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = `${SERVER_URL}/${book.file_name}`;
-    link.download = book.file_name!.split("/").pop() || "download";
+    link.href = url;
+    link.download =
+      book.file_name!.split("/").pop() || "download.md";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   return (
-    <article className={cn("rounded-lg border p-4 shadow-sm bg-background")}> 
+    <article className={cn("rounded-lg border p-4 shadow-sm bg-background")}>
       <div className="flex gap-4 flex-col">
-         {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`${SERVER_URL}/${book.cover_image_path}`}
           alt={book.title}
